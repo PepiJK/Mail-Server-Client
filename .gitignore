@@ -1,0 +1,10 @@
+mail/*
+.vscode
+docs
+original
+makefile.bk
+myclient
+myserver
+src/readline
+src/myhelper/myhelper.o
+src/mysocket/mysocket.o
