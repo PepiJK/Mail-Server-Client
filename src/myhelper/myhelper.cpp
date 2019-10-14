@@ -106,4 +106,14 @@ vector<string> MyHelper::subjectsInDirectory(string fullDir)
     closedir(dir);
     return files;
 }
+
+bool MyHelper::fileExists(string filename)
+{
+    struct stat buf;
+    if(stat(filename.c_str(), &buf) != -1)
+    {
+        return true;
+    }
+    return false;
+}
 MyHelper::~MyHelper() {}

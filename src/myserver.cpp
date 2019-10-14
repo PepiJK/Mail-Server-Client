@@ -83,6 +83,19 @@ int main(int argc, char *argv[])
                mailId = helper.filesInDirectory(fullDir) + 1;
                string filename = fullDir + '/' + to_string(mailId) + '_' + subject.substr(0, subject.length() - 1) + ".txt";
 
+               // check if filename exists -> increment index
+               while (1)
+               {
+                  if (helper.fileExists(filename))
+                  {
+                     mailId++;
+                     filename = fullDir + '/' + to_string(mailId) + '_' + subject.substr(0, subject.length() - 1) + ".txt";  
+                  } else
+                  {
+                     break;
+                  }
+               }
+                            
                // create file write mail data to file
                ofstream file;
                file.open(filename.c_str(), ios::out);

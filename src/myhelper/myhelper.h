@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -24,6 +25,7 @@ public:
     int filesInDirectory(string dir);
     vector<string> filenamesInDirecotry(string dir);
     vector<string> subjectsInDirectory(string dir);
+    bool fileExists(string filename);
     ~MyHelper();
 };
 #endif
