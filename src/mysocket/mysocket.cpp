@@ -59,7 +59,7 @@ int MySocket::acceptNewConnection()
         socketError("accept error");
     }
     cout << "Client connected from " << inet_ntoa(cliaddress.sin_addr) << ":" << ntohs(cliaddress.sin_port) << endl;
-    strcpy(buffer, "Welcome to myserver, Please enter your command:\n\0");
+    strcpy(buffer, "Welcome to myserver, Please enter your command:\0");
     if (send(new_socket, buffer, strlen(buffer), 0) == -1)
     {
         socketError("send error");
@@ -67,24 +67,16 @@ int MySocket::acceptNewConnection()
     return new_socket;
 }
 
-const char *MySocket::recvMessage()
+const char *MySocket::recvMessage(int socket)
 {
-    size = recv(create_socket, buffer, BUF - 1, 0);
-    if (size == -1)
+    if (socket == -1)
     {
-        socketError("recv error");
+        size = recv(create_socket, buffer, BUF - 1, 0);
     }
-    else if (size == 0)
+    else
     {
-        return "QUIT\n\0";
+        size = recv(socket, buffer, BUF - 1, 0);
     }
-    buffer[size] = '\0';
-    return buffer;
-}
-
-const char *MySocket::recvMessageFromClient(int socket)
-{
-    size = recv(socket, buffer, BUF - 1, 0);
 
     if (size == -1)
     {
@@ -98,20 +90,32 @@ const char *MySocket::recvMessageFromClient(int socket)
     return buffer;
 }
 
-void MySocket::sendMessage(const char *message)
+void MySocket::sendMessage(const char *message, int socket)
 {
-    if (send(create_socket, message, strlen(message), 0) == -1)
+    if (socket == -1)
     {
-        socketError("send error");
+        if (send(create_socket, message, strlen(message), 0) == -1)
+        {
+            socketError("send error");
+        }
+    }
+    else
+    {
+        if (send(socket, message, strlen(message), 0) == -1)
+        {
+            socketError("send error");
+        }
     }
 }
 
-void MySocket::sendMessageToClient(const char *message, int socket)
+string MySocket::getAddr()
 {
-    if (send(socket, message, strlen(message), 0) == -1)
-    {
-        socketError("send error");
-    }
+    return inet_ntoa(cliaddress.sin_addr);
+}
+
+string MySocket::getPort()
+{
+    return to_string(ntohs(cliaddress.sin_port));
 }
 
 void MySocket::socketError(const char *errorMessage)

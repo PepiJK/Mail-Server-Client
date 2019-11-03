@@ -32,11 +32,10 @@ public:
     void connectSocket();
     void listenSocket();
     int acceptNewConnection();
-    const char *recvMessage();
-    const char *recvMessageFromClient(int socket);
-    void sendMessage(const char *message);
-    void sendMessageToClient(const char *message, int socket);
-
+    const char *recvMessage(int socket = -1);
+    void sendMessage(const char *message, int socket = -1);
+    string getAddr();
+    string getPort();
     ~MySocket();
 };
 #endif

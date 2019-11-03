@@ -1,4 +1,4 @@
-/* myclient.c 
+/* myclient.cpp 
 BIF3C1 Josef Koch if18b061
 */
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
    char buffer[BUF], command[BUF];
 
-   cout << clientSocket.recvMessage();
+   cout << clientSocket.recvMessage() << endl;
 
    while (1)
    {
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
             buffer[strlen(buffer)] = '\0';
             clientSocket.sendMessage(buffer);
          }
-         // email body
+         // email message
          do
          {
             fgets(buffer, BUF, stdin);
@@ -56,11 +56,12 @@ int main(int argc, char *argv[])
             }
             clientSocket.sendMessage(buffer);
          } while (strcmp(buffer, ".\n\0") != 0);
-         cout << clientSocket.recvMessage();
+         cout << clientSocket.recvMessage() << endl;
       }
+
       else if (strcmp(command, "LIST\n\0") == 0)
       {
-         // sender
+         // user
          fgets(buffer, BUF, stdin);
          buffer[strlen(buffer)] = '\0';
          clientSocket.sendMessage(buffer);
@@ -74,6 +75,7 @@ int main(int argc, char *argv[])
          {
             for (int i = 1; i <= mailAmount; i++)
             {
+               // tell the server to start sending the list of mails
                clientSocket.sendMessage("OK\0");
                mailSubject = clientSocket.recvMessage();
                mailSubject = mailSubject.substr(mailSubject.find('_') + 1, mailSubject.length()) + ' ' + to_string(i);
@@ -81,9 +83,10 @@ int main(int argc, char *argv[])
             }
          }
       }
+
       else if (strcmp(command, "READ\n\0") == 0)
       {
-         // sender
+         // user
          fgets(buffer, BUF, stdin);
          buffer[strlen(buffer)] = '\0';
          clientSocket.sendMessage(buffer);
@@ -95,11 +98,13 @@ int main(int argc, char *argv[])
 
          string mailOutput;
          string resp = clientSocket.recvMessage();
+         cout << resp << endl;
+
          if (resp == "OK")
          {
-            cout << resp << endl;
             while (1)
             {
+               // send Server the ok to start receiving the mail
                clientSocket.sendMessage("OK\0");
                mailOutput = clientSocket.recvMessage();
                if (mailOutput == ".\n")
@@ -109,14 +114,11 @@ int main(int argc, char *argv[])
                cout << mailOutput;
             }
          }
-         else
-         {
-            cout << resp << endl;
-         }
       }
+
       else if (strcmp(command, "DEL\n\0") == 0)
       {
-         // sender
+         // user
          fgets(buffer, BUF, stdin);
          buffer[strlen(buffer)] = '\0';
          clientSocket.sendMessage(buffer);
@@ -128,10 +130,12 @@ int main(int argc, char *argv[])
 
          cout << clientSocket.recvMessage() << endl;
       }
+
       else if (strcmp(command, "QUIT\n\0") == 0)
       {
          break;
       }
+
       else
       {
          cout << "Unknown command!" << endl;
