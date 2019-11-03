@@ -68,8 +68,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-               // write file with data in directory of user
-               string fullDir = argDir + '/' + sender.substr(0, sender.length() - 1);
+               // write file with data in directory of user who reveivces the mail
+               string fullDir = argDir + '/' + receiver.substr(0, receiver.length() - 1);
                int mailId;
 
                // check if directory exists, create if not
@@ -84,28 +84,32 @@ int main(int argc, char *argv[])
                string filename = fullDir + '/' + to_string(mailId) + '_' + subject.substr(0, subject.length() - 1) + ".txt";
 
                // check if filename exists -> increment index
+               // it can happend that the filename with the same index and subjects exists when a file before gets deleted
+               // solution would be the use of a UUID, however this is not implemented in standard c++
                while (1)
                {
                   if (helper.fileExists(filename))
                   {
                      mailId++;
-                     filename = fullDir + '/' + to_string(mailId) + '_' + subject.substr(0, subject.length() - 1) + ".txt";  
-                  } else
+                     filename = fullDir + '/' + to_string(mailId) + '_' + subject.substr(0, subject.length() - 1) + ".txt";
+                  }
+                  else
                   {
                      break;
                   }
                }
-                            
+
                // create file write mail data to file
                ofstream file;
                file.open(filename.c_str(), ios::out);
                file << sender + receiver + subject + message + ".\n\0";
                cout << "Mail " << subject.substr(0, subject.length() - 1) << " from user "
-                    << sender.substr(0, sender.length() - 1) << " safed!" << endl;
+                    << sender.substr(0, sender.length() - 1) << " safed to " << filename << endl;
                serverSocket.sendMessageToClient("OK\n\0", new_socket);
                file.close();
             }
          }
+
          else if (command == "LIST\n")
          {
             string user = serverSocket.recvMessageFromClient(new_socket);
@@ -121,7 +125,7 @@ int main(int argc, char *argv[])
             {
                vector<string> mails;
 
-               // get every mail subject from directory
+               // get every mail subject from directory and send to client
                mails = helper.subjectsInDirectory(dirPath);
                buffer = to_string(mails.size()) + " mails for user " + user;
                serverSocket.sendMessageToClient(buffer.c_str(), new_socket);
@@ -142,6 +146,7 @@ int main(int argc, char *argv[])
                }
             }
          }
+
          else if (command == "READ\n")
          {
             string user = serverSocket.recvMessageFromClient(new_socket);
@@ -200,6 +205,7 @@ int main(int argc, char *argv[])
                }
             }
          }
+
          else if (command == "DEL\n")
          {
             string user = serverSocket.recvMessageFromClient(new_socket);
