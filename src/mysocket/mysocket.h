@@ -34,8 +34,6 @@ public:
     int acceptNewConnection();
     const char *recvMessage(int socket = -1);
     void sendMessage(const char *message, int socket = -1);
-    string getAddr();
-    string getPort();
     ~MySocket();
 };
 #endif

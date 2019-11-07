@@ -1,5 +1,7 @@
 /* myserver.cpp 
 BIF3C1 Josef Koch if18b061
+Protokollaufbau von SEND, LIST, READ, DEL, QUIT -> implementiert wie in der Angabe
+Es fehlen: LOGIN, LDAP Anbindung, Sperren von Clients bei fehlerhaften Login
 */
 
 #include <sys/types.h>
@@ -170,6 +172,7 @@ void serverThread(MyHelper helper, MySocket &serverSocket, int new_socket, strin
                if (mailIndex < mails.size())
                {
                   fulldir = dirPath + '/' + mails[mailIndex];
+                  mtx.lock();
                   file.open(fulldir.c_str());
                   if (file.is_open())
                   {
@@ -191,6 +194,7 @@ void serverThread(MyHelper helper, MySocket &serverSocket, int new_socket, strin
                      serverSocket.sendMessage("ERR - cannot open mail file\0", new_socket);
                   }
                   file.close();
+                  mtx.unlock();
                }
                else
                {
@@ -233,6 +237,7 @@ void serverThread(MyHelper helper, MySocket &serverSocket, int new_socket, strin
                if (mailIndex < mails.size())
                {
                   fulldir = dirPath + '/' + mails[mailIndex];
+                  mtx.lock();
                   if (remove(fulldir.c_str()) == 0)
                   {
                      cout << "Deleted mail " + mails[mailIndex] << " from user " << user << endl;
@@ -242,6 +247,7 @@ void serverThread(MyHelper helper, MySocket &serverSocket, int new_socket, strin
                   {
                      serverSocket.sendMessage("ERR - cannot delete mail\0", new_socket);
                   }
+                  mtx.unlock();
                }
                else
                {
@@ -256,7 +262,7 @@ void serverThread(MyHelper helper, MySocket &serverSocket, int new_socket, strin
       }
 
    } while (command != "QUIT\n");
-   cout << "Client disconnected from " + serverSocket.getAddr() + ":" + serverSocket.getPort() << endl;
+   cout << "Client disconnected" << endl;
    close(new_socket);
 }
 

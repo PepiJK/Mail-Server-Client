@@ -108,16 +108,6 @@ void MySocket::sendMessage(const char *message, int socket)
     }
 }
 
-string MySocket::getAddr()
-{
-    return inet_ntoa(cliaddress.sin_addr);
-}
-
-string MySocket::getPort()
-{
-    return to_string(ntohs(cliaddress.sin_port));
-}
-
 void MySocket::socketError(const char *errorMessage)
 {
     perror(errorMessage);
