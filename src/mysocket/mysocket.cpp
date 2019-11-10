@@ -71,10 +71,12 @@ const char *MySocket::recvMessage(int socket)
 {
     if (socket == -1)
     {
+        // client
         size = recv(create_socket, buffer, BUF - 1, 0);
     }
     else
     {
+        // server
         size = recv(socket, buffer, BUF - 1, 0);
     }
 
@@ -94,6 +96,7 @@ void MySocket::sendMessage(const char *message, int socket)
 {
     if (socket == -1)
     {
+        // client
         if (send(create_socket, message, strlen(message), 0) == -1)
         {
             socketError("send error");
@@ -101,6 +104,7 @@ void MySocket::sendMessage(const char *message, int socket)
     }
     else
     {
+        // server
         if (send(socket, message, strlen(message), 0) == -1)
         {
             socketError("send error");
